@@ -1,9 +1,15 @@
 package edu.mit.csail.sdg.alloy4whole;
 
 import edu.mit.csail.sdg.alloy4.A4Reporter;
+import edu.mit.csail.sdg.alloy4.ConstList;
 import edu.mit.csail.sdg.alloy4.Err;
+import edu.mit.csail.sdg.alloy4viz.VizGUI;
+import edu.mit.csail.sdg.ast.Command;
 import edu.mit.csail.sdg.ast.Module;
+import edu.mit.csail.sdg.parser.CompUtil;
 import edu.mit.csail.sdg.translator.A4Options;
+import edu.mit.csail.sdg.translator.A4Solution;
+import edu.mit.csail.sdg.translator.TranslateAlloyToKodkod;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,8 +26,14 @@ public final class AtomCLI {
     private A4Reporter reporter;
     private A4Options options;
     private Module module;
+    private A4Solution solution;
 
     // CLI commands:
+    // - c: list commands
+    // - d: display last solution
+    // - e: execute a command
+    // - m: set the model
+    // - n: next solution
     // - q: quit
 
     private AtomCLI () {
@@ -37,6 +49,7 @@ public final class AtomCLI {
             try {
 
                 String input = reader.readLine();
+                String[] tokens = input.split("\\s+");
 
                 if (input.length() > 0) {
 
@@ -46,14 +59,31 @@ public final class AtomCLI {
 
                         // Get commands
                         case 'c':
+                            list_commands();
+                            break;
+
+                        // Display last solution
+                        case 'd':
+                            display_solution();
                             break;
 
                         // Execute command
                         case 'e':
+                            if (tokens.length > 1) {
+                                int index = Integer.parseInt(tokens[1]);
+                                execute_command(index);
+                            }
                             break;
 
                         // Set model
                         case 'm':
+                            if (tokens.length > 1) {
+                                set_model(tokens[1]);
+                            }
+                            break;
+
+                        case 'n':
+                            next_solution();
                             break;
 
                         // Quit
@@ -79,6 +109,76 @@ public final class AtomCLI {
 
 
         }
+
+    }
+
+    private void display_solution () {
+
+        if (solution != null) {
+
+            solution.writeXML("CLI.xml");
+            VizGUI viz = new VizGUI(false, "CLI.xml", null);
+            viz.loadXML("CLI.xml", true);
+
+        }
+
+    }
+
+    private void execute_command (int command_index) {
+
+        if (module != null) {
+
+            ConstList<Command> commands = module.getAllCommands();
+
+            if (command_index >= 0 && command_index < commands.size()) {
+
+                Command command = commands.get(command_index);
+
+                solution = TranslateAlloyToKodkod.execute_command(
+                        reporter,
+                        module.getAllReachableSigs(),
+                        command,
+                        options
+                );
+
+                System.out.println(solution);
+
+            }
+
+        }
+
+    }
+
+    private void list_commands () {
+
+        if (module != null) {
+
+            ConstList<Command> commands = module.getAllCommands();
+            for (int i=0; i<commands.size(); ++i) {
+                System.out.println(i + ": " + commands.get(i));
+            }
+
+        }
+
+    }
+
+    private void next_solution () {
+
+        if (solution != null) {
+
+            solution = solution.next();
+
+            System.out.println(solution);
+
+        }
+
+    }
+
+    private void set_model (String file) {
+
+        module = CompUtil.parseEverything_fromFile(reporter, null, file);
+
+        System.out.println("Model set: " + file);
 
     }
 
