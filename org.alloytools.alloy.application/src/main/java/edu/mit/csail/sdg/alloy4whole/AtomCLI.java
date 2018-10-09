@@ -99,6 +99,8 @@ public final class AtomCLI {
 
                 }
 
+                System.out.println("CLI READY");
+
             }
 
             catch (IOException e) {
@@ -141,6 +143,7 @@ public final class AtomCLI {
                         options
                 );
 
+                System.out.println('r');
                 System.out.println(solution);
 
             }
@@ -153,9 +156,10 @@ public final class AtomCLI {
 
         if (module != null) {
 
+            System.out.println('c');
             ConstList<Command> commands = module.getAllCommands();
             for (int i=0; i<commands.size(); ++i) {
-                System.out.println(i + ": " + commands.get(i));
+                System.out.println(i + ":" + commands.get(i));
             }
 
         }
@@ -168,6 +172,7 @@ public final class AtomCLI {
 
             solution = solution.next();
 
+            System.out.println('r');
             System.out.println(solution);
 
         }
@@ -178,7 +183,8 @@ public final class AtomCLI {
 
         module = CompUtil.parseEverything_fromFile(reporter, null, file);
 
-        System.out.println("Model set: " + file);
+        System.out.println('m');
+        System.out.println(file);
 
     }
 
