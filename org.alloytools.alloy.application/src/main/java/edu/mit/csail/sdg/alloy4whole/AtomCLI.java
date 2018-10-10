@@ -44,6 +44,8 @@ public final class AtomCLI {
 
         boolean wait_for_next_input = true;
 
+        System.out.println("CLI READY");
+
         while (wait_for_next_input) {
 
             try {
