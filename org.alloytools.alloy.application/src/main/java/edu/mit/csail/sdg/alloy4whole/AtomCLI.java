@@ -146,6 +146,7 @@ public final class AtomCLI {
                 );
 
                 System.out.println('r');
+                System.out.println(command);
                 System.out.println(solution);
 
             }
