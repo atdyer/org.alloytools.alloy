@@ -26,6 +26,7 @@ public final class AtomCLI {
     private A4Reporter reporter;
     private A4Options options;
     private Module module;
+    private Command command;
     private A4Solution solution;
 
     // CLI commands:
@@ -55,9 +56,9 @@ public final class AtomCLI {
 
                 if (input.length() > 0) {
 
-                    char command = input.charAt(0);
+                    char cmd = input.charAt(0);
 
-                    switch (command) {
+                    switch (cmd) {
 
                         // Get commands
                         case 'c':
@@ -136,7 +137,7 @@ public final class AtomCLI {
 
             if (command_index >= 0 && command_index < commands.size()) {
 
-                Command command = commands.get(command_index);
+                command = commands.get(command_index);
 
                 solution = TranslateAlloyToKodkod.execute_command(
                         reporter,
@@ -171,11 +172,12 @@ public final class AtomCLI {
 
     private void next_solution () {
 
-        if (solution != null) {
+        if (command != null && solution != null) {
 
             solution = solution.next();
 
             System.out.println('r');
+            System.out.println(command);
             System.out.println(solution);
 
         }
@@ -185,6 +187,8 @@ public final class AtomCLI {
     private void set_model (String file) {
 
         module = CompUtil.parseEverything_fromFile(reporter, null, file);
+        command = null;
+        solution = null;
 
         System.out.println('m');
         System.out.println(file);
