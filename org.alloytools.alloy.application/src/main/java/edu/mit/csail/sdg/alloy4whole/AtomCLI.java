@@ -124,6 +124,7 @@ public final class AtomCLI {
             solution.writeXML("CLI.xml");
             VizGUI viz = new VizGUI(false, "CLI.xml", null);
             viz.loadXML("CLI.xml", true);
+            System.out.println('i');
 
         }
 
