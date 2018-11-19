@@ -201,13 +201,21 @@ public final class AtomCLI {
 
         try {
 
-            module = CompUtil.parseEverything_fromFile(reporter, null, file);
+            if (new String("null").equals(file)) {
+                module = null;
+                System.out.println('m');
+                System.out.println("Model cleared");
+            } else {
 
-            System.out.println('m');
-            System.out.println(file);
-            ConstList<Command> commands = module.getAllCommands();
-            for (int i=0; i<commands.size(); ++i) {
-                System.out.println(i + ":" + commands.get(i));
+                module = CompUtil.parseEverything_fromFile(reporter, null, file);
+
+                System.out.println('m');
+                System.out.println(file);
+                ConstList<Command> commands = module.getAllCommands();
+                for (int i = 0; i < commands.size(); ++i) {
+                    System.out.println(i + ":" + commands.get(i));
+                }
+
             }
 
         } catch (Err e) {
