@@ -108,7 +108,9 @@ public final class AtomCLI {
 
             catch (IOException e) {
 
-                System.out.println("Error");
+                System.out.println("e");
+                System.out.println(e.toString());
+                System.out.println("CLI READY");
 
             }
 
@@ -187,12 +189,21 @@ public final class AtomCLI {
 
     private void set_model (String file) {
 
-        module = CompUtil.parseEverything_fromFile(reporter, null, file);
-        command = null;
-        solution = null;
+        try {
 
-        System.out.println('m');
-        System.out.println(file);
+            module = CompUtil.parseEverything_fromFile(reporter, null, file);
+            command = null;
+            solution = null;
+
+            System.out.println('m');
+            System.out.println(file);
+
+        } catch (Err e) {
+
+            System.out.println("e");
+            System.out.println(e.toString());
+
+        }
 
     }
 
