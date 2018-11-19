@@ -3,6 +3,7 @@ package edu.mit.csail.sdg.alloy4whole;
 import edu.mit.csail.sdg.alloy4.A4Reporter;
 import edu.mit.csail.sdg.alloy4.ConstList;
 import edu.mit.csail.sdg.alloy4.Err;
+import edu.mit.csail.sdg.alloy4.ErrorWarning;
 import edu.mit.csail.sdg.alloy4viz.VizGUI;
 import edu.mit.csail.sdg.ast.Command;
 import edu.mit.csail.sdg.ast.Module;
@@ -28,6 +29,7 @@ public final class AtomCLI {
     private Module module;
     private Command command;
     private A4Solution solution;
+    private int solution_index;
 
     // CLI commands:
     // - c: list commands
@@ -60,11 +62,6 @@ public final class AtomCLI {
 
                     switch (cmd) {
 
-                        // Get commands
-                        case 'c':
-                            list_commands();
-                            break;
-
                         // Display last solution
                         case 'd':
                             display_solution();
@@ -95,6 +92,7 @@ public final class AtomCLI {
                             break;
 
                         default:
+                            System.out.println("e");
                             System.out.println("Unknown command.");
                             break;
 
@@ -121,12 +119,20 @@ public final class AtomCLI {
 
     private void display_solution () {
 
-        if (solution != null) {
+        try {
+
+            if (solution == null) throw new ErrorWarning("No instance to display");
 
             solution.writeXML("CLI.xml");
             VizGUI viz = new VizGUI(false, "CLI.xml", null);
             viz.loadXML("CLI.xml", true);
-            System.out.println('i');
+            System.out.println("d");
+
+
+        } catch (Err e) {
+
+            System.out.println("de");
+            System.out.println(e);
 
         }
 
@@ -134,7 +140,9 @@ public final class AtomCLI {
 
     private void execute_command (int command_index) {
 
-        if (module != null) {
+        try {
+
+            if (module == null) throw new ErrorWarning("Model not set");
 
             ConstList<Command> commands = module.getAllCommands();
 
@@ -149,25 +157,19 @@ public final class AtomCLI {
                         options
                 );
 
+                solution_index = command_index;
+
                 System.out.println('r');
                 System.out.println(Integer.toString(command_index) + ":" + command.toString());
                 System.out.println(solution);
 
             }
 
-        }
 
-    }
+        } catch (Err e) {
 
-    private void list_commands () {
-
-        if (module != null) {
-
-            System.out.println('c');
-            ConstList<Command> commands = module.getAllCommands();
-            for (int i=0; i<commands.size(); ++i) {
-                System.out.println(i + ":" + commands.get(i));
-            }
+            System.out.println("re");
+            System.out.println(e);
 
         }
 
@@ -175,13 +177,21 @@ public final class AtomCLI {
 
     private void next_solution () {
 
-        if (command != null && solution != null) {
+        try {
+
+            if (command == null || solution == null)
+                throw new ErrorWarning("No initial solution, run a command first");
 
             solution = solution.next();
 
             System.out.println('r');
-            System.out.println(command);
+            System.out.println(Integer.toString(solution_index) + ":" + command);
             System.out.println(solution);
+
+        } catch (Err e) {
+
+            System.out.println("ne");
+            System.out.println(e);
 
         }
 
@@ -192,15 +202,18 @@ public final class AtomCLI {
         try {
 
             module = CompUtil.parseEverything_fromFile(reporter, null, file);
-            command = null;
-            solution = null;
 
             System.out.println('m');
             System.out.println(file);
+            ConstList<Command> commands = module.getAllCommands();
+            for (int i=0; i<commands.size(); ++i) {
+                System.out.println(i + ":" + commands.get(i));
+            }
 
         } catch (Err e) {
 
-            System.out.println("e");
+            module = null;
+            System.out.println("me");
             System.out.println(e.toString());
 
         }
